@@ -1,0 +1,43 @@
+# =============================================================
+# Render.com deployment config
+# Free tier: 750 hours/month, spins down after 15 min inactivity
+# Docs: https://render.com/docs/blueprint-spec
+# =============================================================
+
+services:
+  - type: web
+    name: arc-backend
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+      # Paste your Neon connection string here, or set in Render dashboard
+      - key: DATABASE_URL
+        sync: false   # prompts you to enter it in the dashboard — never hardcode
+
+      - key: USE_NEON_AUTH
+        value: false   # change to true if using Neon Auth
+
+      - key: NEON_AUTH_JWKS_URL
+        sync: false
+
+      - key: JWT_SECRET
+        generateValue: true  # Render auto-generates a secure random value
+
+      - key: JWT_EXPIRES_IN
+        value: 7d
+
+      - key: GEMINI_FREE_API_KEY
+        sync: false
+
+      - key: FREE_TIER_DAILY_TOKEN_LIMIT
+        value: "50000"
+
+      - key: ALLOWED_ORIGINS
+        value: https://arc-lime.vercel.app

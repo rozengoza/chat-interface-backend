@@ -1,0 +1,17 @@
+# =============================================================
+# Railway deployment config
+# Free tier: $5 credit/month (~500 hours at hobby pricing)
+# Does NOT spin down — stays live unlike Render free tier
+# Docs: https://docs.railway.app/reference/config-as-code
+# =============================================================
+
+[build]
+builder = "NIXPACKS"
+buildCommand = "npm install"
+
+[deploy]
+startCommand = "npm start"
+healthcheckPath = "/health"
+healthcheckTimeout = 30
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3
