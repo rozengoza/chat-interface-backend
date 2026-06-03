@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { db } from '../db/index.js';
 import { requireAuth } from '../middleware/auth.js';
 import { ADAPTERS, resolveApiKey } from '../adapters/index.js';
+import { encrypt } from '../lib/encryption.js';
 
 export const completionRouter = Router();
 completionRouter.use(requireAuth);
@@ -99,11 +100,11 @@ completionRouter.post('/', async (req, res) => {
   let estimatedTokens = 0;
 
   try {
-    // Save the user's message first
+    // Save the user's message first (encrypt content)
     const userMsg = messages[messages.length - 1];
     await db.query(
       `INSERT INTO messages (chat_id, role, content) VALUES ($1, $2, $3)`,
-      [chatId, userMsg.role, userMsg.content]
+      [chatId, userMsg.role, encrypt(userMsg.content)]
     );
 
     // Inject chat system_prompt if no system message was provided by the client
@@ -137,7 +138,7 @@ completionRouter.post('/', async (req, res) => {
       `INSERT INTO messages (chat_id, role, content, output_tokens)
        VALUES ($1, 'assistant', $2, $3)
        RETURNING id`,
-      [chatId, fullContent, estimatedTokens]
+      [chatId, encrypt(fullContent), estimatedTokens]
     );
 
     // Update chat updated_at and title if it's the first exchange

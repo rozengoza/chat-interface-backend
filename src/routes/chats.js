@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { db } from '../db/index.js';
+import { encrypt, decrypt } from '../lib/encryption.js';
 import { requireAuth } from '../middleware/auth.js';
 
 export const chatsRouter = Router();
@@ -28,33 +29,57 @@ chatsRouter.get('/', async (req, res) => {
 });
 
 // POST /chats — create a new chat
+// POST /chats — create a new chat (optionally with initial messages)
 chatsRouter.post('/', async (req, res) => {
-  const { title, provider, model, system_prompt } = req.body ?? {};
-  if (!provider || !model) {
-    return res.status(400).json({ error: 'provider and model are required' });
-  }
+  const { title, provider, model, system_prompt, messages } = req.body ?? {};
+  if (!provider || !model) return res.status(400).json({ error: 'provider and model are required' });
 
+  // Use a dedicated client so we can transactionally insert chat + messages
+  const client = await db.getClient();
   try {
-    // Auto-detect is_free_tier from model metadata — never trust client input
-    const { rows: modelRows } = await db.query(
+    await client.query('BEGIN');
+
+    // validate model and determine is_free_tier
+    const { rows: modelRows } = await client.query(
       `SELECT is_free FROM models WHERE provider_slug = $1 AND model_id = $2 AND is_active = TRUE`,
       [provider, model]
     );
     if (!modelRows[0]) {
+      await client.query('ROLLBACK');
       return res.status(400).json({ error: 'Invalid or inactive provider/model' });
     }
     const is_free_tier = modelRows[0].is_free;
 
-    const { rows } = await db.query(
+    // create chat
+    const { rows: chatRows } = await client.query(
       `INSERT INTO chats (user_id, title, provider, model, is_free_tier, system_prompt)
-       VALUES ($1, $2, $3, $4, $5, $6)
-       RETURNING *`,
+       VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`,
       [req.user.id, title ?? 'New chat', provider, model, is_free_tier, system_prompt ?? null]
     );
-    res.status(201).json({ chat: rows[0] });
+    const chat = chatRows[0];
+
+    // insert messages if provided
+    const inserted = [];
+    if (Array.isArray(messages) && messages.length > 0) {
+      const insertMsgSql = `INSERT INTO messages (chat_id, role, content, created_at)
+                             VALUES ($1,$2,$3,$4) RETURNING id, role, content, input_tokens, output_tokens, created_at`;
+      for (const m of messages) {
+        const role = m.role === 'assistant' ? 'assistant' : (m.role === 'system' ? 'system' : 'user');
+        const content = typeof m.content === 'string' ? m.content : '';
+        const createdAt = m.created_at ? new Date(m.created_at) : new Date();
+        const mr = await client.query(insertMsgSql, [chat.id, role, encrypt(content), createdAt.toISOString()]);
+        inserted.push(mr.rows[0]);
+      }
+    }
+
+    await client.query('COMMIT');
+    res.status(201).json({ chat, messages: inserted });
   } catch (err) {
-    console.error('[chats:create]', err);
+    await client.query('ROLLBACK').catch(() => {});
+    console.error('[chats:create-with-messages]', err);
     res.status(500).json({ error: 'Failed to create chat' });
+  } finally {
+    client.release();
   }
 });
 
@@ -75,7 +100,13 @@ chatsRouter.get('/:id', async (req, res) => {
       [req.params.id]
     );
 
-    res.json({ chat: chatRows[0], messages });
+    // Decrypt message contents before returning
+    const decMessages = messages.map(m => ({
+      ...m,
+      content: decrypt(m.content),
+    }));
+
+    res.json({ chat: chatRows[0], messages: decMessages });
   } catch (err) {
     console.error('[chats:get]', err);
     res.status(500).json({ error: 'Failed to fetch chat' });
