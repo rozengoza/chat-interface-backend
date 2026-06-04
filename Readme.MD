@@ -148,34 +148,34 @@ stateDiagram-v2
 
 ---
 
-# 1. Clone and install
+#### 1. Clone and install
 git clone https://github.com/rozengoza/chat-interface-backend.git
 cd chat-interface-backend
 npm install
 
-# 2. Create environment file
+#### 2. Create environment file
 cp .env.example .env
-# Fill in your Neon DATABASE_URL (pooled connection string)
+##### Fill in your Neon DATABASE_URL (pooled connection string)
 
-# Required
+#### Required
 DATABASE_URL=postgresql://user:pass@ep-xxxx.us-east-2.aws.neon.tech/neondb?sslmode=require
 
-# Local auth
+#### Local auth
 USE_NEON_AUTH=false            # set to true for Neon Auth
 JWT_SECRET=your-super-secret   # only needed if USE_NEON_AUTH=false
 
-# Optional
+#### Optional
 ALLOWED_ORIGINS=http://localhost:5173,https://your-frontend.vercel.app
 PORT=5000
 
-# 3. Initialize the database
-# Open Neon SQL Editor and paste the contents of sql/schema.sql → Run
+#### 3. Initialize the database
+##### Open Neon SQL Editor and paste the contents of sql/schema.sql → Run
 
-# 4. Start the server
+#### 4. Start the server
 npm run dev
-# → http://localhost:5000
-# → http://localhost:5000/health   {"ok":true}
-# → http://localhost:5000/models   list of available models
+#####→ http://localhost:5000
+##### → http://localhost:5000/health   {"ok":true}
+##### → http://localhost:5000/models   list of available models
 
 ---
 
@@ -214,8 +214,63 @@ curl -s -X POST http://localhost:3001/auth/register \
 | `PATCH` | `/chats/:id` | JWT | `{ title }` | `{ id, title }` |
 | `DELETE` | `/chats/:id` | JWT | Cascades to messages | `{ success: true }` |
 
+---
+
+## FAQ
+
+<details>
+<summary><strong>When should I use Neon Auth vs. local JWT?</strong></summary>
+
+Local JWT is perfect for quick prototyping and when you don't need social login.
+
+Neon Auth gives you passwordless/OAuth flows, a hosted sign‑in widget, and stronger RS256 tokens. Ideal for production apps that want a polished auth UX without extra code.
+
+</details>
+
+<details>
+<summary><strong>Can I add more AI providers?</strong></summary>
+
+Absolutely. The adapter pattern in `src/adapters/index.js` makes it easy. Just implement a function that accepts the same arguments and returns a stream or response object, then register it in the catalogue.
+
+</details>
+
+<details>
+<summary><strong>Do I still need an Anthropic API key?</strong></summary>
+
+Yes, ARC Backend proxies your key to the provider. The frontend sends the key with each completion request, or you can configure a default key server‑side (not recommended for multi‑user deployments).
+
+</details>
+
+<details>
+<summary><strong>Why SSE instead of WebSockets?</strong></summary>
+
+SSE is simpler, works over HTTP/1.1 and HTTP/2, and is perfect for one‑way streaming of tokens. For a chat completion, you only need server‑to‑client streaming.
+
+</details>
 
 ---
+
+## Contributing
+
+1. **Fork** the repository on GitHub.
+2. **Create** a feature branch: `git checkout -b feature/my-feature`
+3. **Make** your changes and test with `npm run dev`.
+4. **Run** the migration if you add new tables: `node src/db/migrate.js`.
+5. **Submit** a Pull Request with a clear description.
+
+Check the [open issues](https://github.com/rozengoza/chat-interface-backend/issues) for ways to help.
+
+---
+
+## License
+
+[MIT](https://github.com/rozengoza/chat-interface-backend/blob/main/LICENSE) — see `LICENSE` for details.
+
+---
+
+<p align="center">
+  <sub>Built with ❤️ by <a href="https://github.com/rozengoza">rozengoza</a> · Deployed on <a href="https://fly.io/">Fly.io</a> and <a href="https://railway.app/">Railway</a> for zero‑cost global latency.</sub>
+</p>
 
 
 
