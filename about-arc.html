@@ -1,386 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About ARC</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap');
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --arc-bg:#0a0c10;--arc-surface:#111318;--arc-border:#1e2330;
+      --arc-text:#e8eaf0;--arc-muted:#7a8099;--arc-accent:#5b8cff;
+      --arc-teal:#2dd4bf;--arc-purple:#a78bfa;--arc-green:#4ade80;
+      --arc-amber:#fbbf24;--arc-red:#f87171;
+      --font-head:'Syne',sans-serif;--font-mono:'JetBrains Mono',monospace;
+    }
+    body{background:var(--arc-bg);color:var(--arc-text);font-family:var(--font-mono);padding:0 0 3rem}
 
-<style>
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap');
-*{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --arc-bg:#0a0c10;--arc-surface:#111318;--arc-border:#1e2330;
-  --arc-text:#e8eaf0;--arc-muted:#7a8099;--arc-accent:#5b8cff;
-  --arc-teal:#2dd4bf;--arc-purple:#a78bfa;--arc-green:#4ade80;
-  --arc-amber:#fbbf24;--arc-red:#f87171;
-  --font-head:'Syne',sans-serif;--font-mono:'JetBrains Mono',monospace;
-}
-body{background:var(--arc-bg);color:var(--arc-text);font-family:var(--font-mono);padding:0 0 3rem}
+    @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+    @keyframes flow{0%{stroke-dashoffset:60}100%{stroke-dashoffset:0}}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+    @keyframes blink{0%,100%{opacity:1}49%{opacity:1}50%{opacity:0}}
+    @keyframes scanline{0%{top:0}100%{top:100%}}
+    @keyframes nodeGlow{0%,100%{filter:drop-shadow(0 0 4px var(--c))}50%{filter:drop-shadow(0 0 12px var(--c))}}
 
-@keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-@keyframes flow{0%{stroke-dashoffset:60}100%{stroke-dashoffset:0}}
-@keyframes spin{to{transform:rotate(360deg)}}
-@keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
-@keyframes blink{0%,100%{opacity:1}49%{opacity:1}50%{opacity:0}}
-@keyframes scanline{0%{top:0}100%{top:100%}}
-@keyframes nodeGlow{0%,100%{filter:drop-shadow(0 0 4px var(--c))}50%{filter:drop-shadow(0 0 12px var(--c))}}
+    /* Back button */
+    .back-btn {
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      background: var(--arc-surface);
+      border: 1px solid var(--arc-border);
+      border-radius: 8px;
+      color: var(--arc-accent);
+      font-family: var(--font-head);
+      font-size: 13px;
+      font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      z-index: 100;
+      transition: border-color .25s, background .25s;
+      backdrop-filter: blur(10px);
+    }
+    .back-btn:hover {
+      border-color: var(--arc-accent);
+      background: rgba(91,140,255,.1);
+    }
+    .back-btn svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+    }
 
-.hero{
-  position:relative;padding:4rem 2rem 3rem;text-align:center;overflow:hidden;
-  border-bottom:1px solid var(--arc-border);
-  animation:fadeIn .8s ease both;
-}
-.hero-grid{
-  position:absolute;inset:0;
-  background-image:linear-gradient(var(--arc-border) 1px,transparent 1px),
-    linear-gradient(90deg,var(--arc-border) 1px,transparent 1px);
-  background-size:40px 40px;opacity:.4;
-}
-.hero-glow{
-  position:absolute;top:-60px;left:50%;transform:translateX(-50%);
-  width:500px;height:300px;
-  background:radial-gradient(ellipse,rgba(91,140,255,.15) 0%,transparent 70%);
-  pointer-events:none;
-}
-.logo-ring{
-  display:inline-flex;align-items:center;justify-content:center;
-  width:72px;height:72px;border-radius:50%;
-  border:1.5px solid var(--arc-accent);
-  position:relative;margin-bottom:1.5rem;
-  animation:fadeUp .6s ease .1s both;
-}
-.logo-ring::before{
-  content:'';position:absolute;inset:-6px;border-radius:50%;
-  border:1px solid rgba(91,140,255,.3);
-  animation:spin 8s linear infinite;
-  border-top-color:var(--arc-accent);
-}
-.logo-text{font-family:var(--font-head);font-size:28px;font-weight:800;letter-spacing:3px;color:var(--arc-accent)}
-.hero h1{font-family:var(--font-head);font-size:clamp(28px,5vw,48px);font-weight:800;line-height:1.1;margin-bottom:1rem;animation:fadeUp .6s ease .2s both}
-.hero h1 span{color:var(--arc-accent)}
-.hero p{color:var(--arc-muted);font-size:13px;line-height:1.7;max-width:540px;margin:0 auto 1.5rem;animation:fadeUp .6s ease .3s both}
-.badge-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;animation:fadeUp .6s ease .4s both}
-.badge{font-size:11px;padding:4px 10px;border-radius:4px;border:1px solid;font-family:var(--font-mono)}
-.badge.blue{background:rgba(91,140,255,.1);border-color:rgba(91,140,255,.4);color:var(--arc-accent)}
-.badge.teal{background:rgba(45,212,191,.1);border-color:rgba(45,212,191,.4);color:var(--arc-teal)}
-.badge.purple{background:rgba(167,139,250,.1);border-color:rgba(167,139,250,.4);color:var(--arc-purple)}
-.badge.green{background:rgba(74,222,128,.1);border-color:rgba(74,222,128,.4);color:var(--arc-green)}
-.badge.amber{background:rgba(251,191,36,.1);border-color:rgba(251,191,36,.4);color:var(--arc-amber)}
+    .hero{
+      position:relative;padding:4rem 2rem 3rem;text-align:center;overflow:hidden;
+      border-bottom:1px solid var(--arc-border);
+      animation:fadeIn .8s ease both;
+    }
+    .hero-grid{
+      position:absolute;inset:0;
+      background-image:linear-gradient(var(--arc-border) 1px,transparent 1px),
+        linear-gradient(90deg,var(--arc-border) 1px,transparent 1px);
+      background-size:40px 40px;opacity:.4;
+    }
+    .hero-glow{
+      position:absolute;top:-60px;left:50%;transform:translateX(-50%);
+      width:500px;height:300px;
+      background:radial-gradient(ellipse,rgba(91,140,255,.15) 0%,transparent 70%);
+      pointer-events:none;
+    }
+    .logo-ring{
+      display:inline-flex;align-items:center;justify-content:center;
+      width:72px;height:72px;border-radius:50%;
+      border:1.5px solid var(--arc-accent);
+      position:relative;margin-bottom:1.5rem;
+      animation:fadeUp .6s ease .1s both;
+    }
+    .logo-ring::before{
+      content:'';position:absolute;inset:-6px;border-radius:50%;
+      border:1px solid rgba(91,140,255,.3);
+      animation:spin 8s linear infinite;
+      border-top-color:var(--arc-accent);
+    }
+    .logo-text{font-family:var(--font-head);font-size:28px;font-weight:800;letter-spacing:3px;color:var(--arc-accent)}
+    .hero h1{font-family:var(--font-head);font-size:clamp(28px,5vw,48px);font-weight:800;line-height:1.1;margin-bottom:1rem;animation:fadeUp .6s ease .2s both}
+    .hero h1 span{color:var(--arc-accent)}
+    .hero p{color:var(--arc-muted);font-size:13px;line-height:1.7;max-width:540px;margin:0 auto 1.5rem;animation:fadeUp .6s ease .3s both}
+    .badge-row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;animation:fadeUp .6s ease .4s both}
+    .badge{font-size:11px;padding:4px 10px;border-radius:4px;border:1px solid;font-family:var(--font-mono)}
+    .badge.blue{background:rgba(91,140,255,.1);border-color:rgba(91,140,255,.4);color:var(--arc-accent)}
+    .badge.teal{background:rgba(45,212,191,.1);border-color:rgba(45,212,191,.4);color:var(--arc-teal)}
+    .badge.purple{background:rgba(167,139,250,.1);border-color:rgba(167,139,250,.4);color:var(--arc-purple)}
+    .badge.green{background:rgba(74,222,128,.1);border-color:rgba(74,222,128,.4);color:var(--arc-green)}
+    .badge.amber{background:rgba(251,191,36,.1);border-color:rgba(251,191,36,.4);color:var(--arc-amber)}
 
-.section{padding:2.5rem 2rem;border-bottom:1px solid var(--arc-border)}
-.section-label{font-size:10px;letter-spacing:2px;color:var(--arc-muted);text-transform:uppercase;margin-bottom:.75rem}
-.section-title{font-family:var(--font-head);font-size:22px;font-weight:700;margin-bottom:1.5rem;color:var(--arc-text)}
+    .section{padding:2.5rem 2rem;border-bottom:1px solid var(--arc-border)}
+    .section-label{font-size:10px;letter-spacing:2px;color:var(--arc-muted);text-transform:uppercase;margin-bottom:.75rem}
+    .section-title{font-family:var(--font-head);font-size:22px;font-weight:700;margin-bottom:1.5rem;color:var(--arc-text)}
 
-.feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
-.feat{
-  background:var(--arc-surface);border:1px solid var(--arc-border);
-  border-radius:8px;padding:1.25rem 1rem;
-  transition:border-color .25s,transform .25s;
-  cursor:default;
-}
-.feat:hover{border-color:var(--arc-accent);transform:translateY(-2px)}
-.feat-icon{font-size:20px;margin-bottom:.75rem}
-.feat-title{font-size:13px;font-weight:600;color:var(--arc-text);margin-bottom:.4rem;font-family:var(--font-head)}
-.feat-desc{font-size:11px;color:var(--arc-muted);line-height:1.6}
+    .feature-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+    .feat{
+      background:var(--arc-surface);border:1px solid var(--arc-border);
+      border-radius:8px;padding:1.25rem 1rem;
+      transition:border-color .25s,transform .25s;
+      cursor:default;
+    }
+    .feat:hover{border-color:var(--arc-accent);transform:translateY(-2px)}
+    .feat-icon{font-size:20px;margin-bottom:.75rem}
+    .feat-title{font-size:13px;font-weight:600;color:var(--arc-text);margin-bottom:.4rem;font-family:var(--font-head)}
+    .feat-desc{font-size:11px;color:var(--arc-muted);line-height:1.6}
 
-.arch-wrap{background:var(--arc-surface);border:1px solid var(--arc-border);border-radius:8px;padding:1.5rem;overflow-x:auto}
-svg.arch{display:block;min-width:560px;width:100%;height:auto}
+    .arch-wrap{background:var(--arc-surface);border:1px solid var(--arc-border);border-radius:8px;padding:1.5rem;overflow-x:auto}
+    svg.arch{display:block;min-width:560px;width:100%;height:auto}
 
-.flow-section{padding:2.5rem 2rem;border-bottom:1px solid var(--arc-border)}
-.flow-steps{display:flex;flex-direction:column;gap:0}
-.flow-step{
-  display:flex;gap:1.25rem;padding:1rem 0;
-  position:relative;
-}
-.flow-step:not(:last-child)::after{
-  content:'';position:absolute;left:17px;top:44px;bottom:0;width:1px;
-  background:linear-gradient(to bottom,var(--arc-border),transparent);
-}
-.step-num{
-  flex-shrink:0;width:36px;height:36px;border-radius:50%;
-  background:rgba(91,140,255,.15);border:1px solid rgba(91,140,255,.4);
-  display:flex;align-items:center;justify-content:center;
-  font-size:12px;font-weight:700;color:var(--arc-accent);
-}
-.step-body{padding-top:4px}
-.step-title{font-size:13px;font-weight:600;color:var(--arc-text);margin-bottom:.3rem;font-family:var(--font-head)}
-.step-desc{font-size:11px;color:var(--arc-muted);line-height:1.6}
+    .flow-section{padding:2.5rem 2rem;border-bottom:1px solid var(--arc-border)}
+    .flow-steps{display:flex;flex-direction:column;gap:0}
+    .flow-step{
+      display:flex;gap:1.25rem;padding:1rem 0;
+      position:relative;
+    }
+    .flow-step:not(:last-child)::after{
+      content:'';position:absolute;left:17px;top:44px;bottom:0;width:1px;
+      background:linear-gradient(to bottom,var(--arc-border),transparent);
+    }
+    .step-num{
+      flex-shrink:0;width:36px;height:36px;border-radius:50%;
+      background:rgba(91,140,255,.15);border:1px solid rgba(91,140,255,.4);
+      display:flex;align-items:center;justify-content:center;
+      font-size:12px;font-weight:700;color:var(--arc-accent);
+    }
+    .step-body{padding-top:4px}
+    .step-title{font-size:13px;font-weight:600;color:var(--arc-text);margin-bottom:.3rem;font-family:var(--font-head)}
+    .step-desc{font-size:11px;color:var(--arc-muted);line-height:1.6}
 
-.api-table{width:100%;border-collapse:collapse;font-size:12px}
-.api-table th{text-align:left;padding:8px 12px;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--arc-muted);border-bottom:1px solid var(--arc-border)}
-.api-table td{padding:8px 12px;border-bottom:1px solid rgba(30,35,48,.6)}
-.api-table tr:last-child td{border-bottom:none}
-.api-table tr:hover td{background:rgba(91,140,255,.04)}
-.method{font-size:10px;padding:2px 7px;border-radius:3px;font-weight:700;letter-spacing:.5px}
-.get{background:rgba(74,222,128,.15);color:var(--arc-green)}
-.post{background:rgba(91,140,255,.15);color:var(--arc-accent)}
-.patch{background:rgba(251,191,36,.15);color:var(--arc-amber)}
-.del{background:rgba(248,113,113,.15);color:var(--arc-red)}
-.route{color:var(--arc-teal);font-family:var(--font-mono)}
+    .api-table{width:100%;border-collapse:collapse;font-size:12px}
+    .api-table th{text-align:left;padding:8px 12px;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--arc-muted);border-bottom:1px solid var(--arc-border)}
+    .api-table td{padding:8px 12px;border-bottom:1px solid rgba(30,35,48,.6)}
+    .api-table tr:last-child td{border-bottom:none}
+    .api-table tr:hover td{background:rgba(91,140,255,.04)}
+    .method{font-size:10px;padding:2px 7px;border-radius:3px;font-weight:700;letter-spacing:.5px}
+    .get{background:rgba(74,222,128,.15);color:var(--arc-green)}
+    .post{background:rgba(91,140,255,.15);color:var(--arc-accent)}
+    .patch{background:rgba(251,191,36,.15);color:var(--arc-amber)}
+    .del{background:rgba(248,113,113,.15);color:var(--arc-red)}
+    .route{color:var(--arc-teal);font-family:var(--font-mono)}
 
-.terminal{
-  background:#050709;border:1px solid var(--arc-border);border-radius:8px;
-  padding:1.25rem;font-size:12px;line-height:1.8;position:relative;overflow:hidden;
-}
-.terminal::before{
-  content:'';position:absolute;left:0;top:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,var(--arc-accent),transparent);
-  animation:shimmer 3s linear infinite;
-  background-size:200% 100%;
-}
-.terminal-bar{display:flex;gap:6px;margin-bottom:1rem}
-.dot{width:10px;height:10px;border-radius:50%}
-.dot.r{background:#f87171}.dot.y{background:#fbbf24}.dot.g{background:#4ade80}
-.t-prompt{color:var(--arc-muted)}
-.t-cmd{color:var(--arc-accent)}
-.t-out{color:var(--arc-green)}
-.t-comment{color:#3d4a5e}
-.t-cursor{display:inline-block;width:8px;height:13px;background:var(--arc-accent);vertical-align:text-bottom;animation:blink 1s step-end infinite}
+    .terminal{
+      background:#050709;border:1px solid var(--arc-border);border-radius:8px;
+      padding:1.25rem;font-size:12px;line-height:1.8;position:relative;overflow:hidden;
+    }
+    .terminal::before{
+      content:'';position:absolute;left:0;top:0;right:0;height:1px;
+      background:linear-gradient(90deg,transparent,var(--arc-accent),transparent);
+      animation:shimmer 3s linear infinite;
+      background-size:200% 100%;
+    }
+    .terminal-bar{display:flex;gap:6px;margin-bottom:1rem}
+    .dot{width:10px;height:10px;border-radius:50%}
+    .dot.r{background:#f87171}.dot.y{background:#fbbf24}.dot.g{background:#4ade80}
+    .t-prompt{color:var(--arc-muted)}
+    .t-cmd{color:var(--arc-accent)}
+    .t-out{color:var(--arc-green)}
+    .t-comment{color:#3d4a5e}
+    .t-cursor{display:inline-block;width:8px;height:13px;background:var(--arc-accent);vertical-align:text-bottom;animation:blink 1s step-end infinite}
 
-.sse-demo{
-  background:var(--arc-surface);border:1px solid var(--arc-border);
-  border-radius:8px;padding:1.25rem;font-size:12px;
-}
-.sse-stream{font-family:var(--font-mono);font-size:11px;line-height:1.8}
-.sse-chunk{color:var(--arc-green);opacity:0}
-.sse-chunk.visible{opacity:1;transition:opacity .15s}
-.sse-event{color:var(--arc-muted)}
+    .sse-demo{
+      background:var(--arc-surface);border:1px solid var(--arc-border);
+      border-radius:8px;padding:1.25rem;font-size:12px;
+    }
+    .sse-stream{font-family:var(--font-mono);font-size:11px;line-height:1.8}
+    .sse-chunk{color:var(--arc-green);opacity:0}
+    .sse-chunk.visible{opacity:1;transition:opacity .15s}
+    .sse-event{color:var(--arc-muted)}
 
-.stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:1.5rem}
-.stat{background:var(--arc-surface);border:1px solid var(--arc-border);border-radius:8px;padding:1rem;text-align:center}
-.stat-num{font-family:var(--font-head);font-size:28px;font-weight:800;color:var(--arc-accent);display:block}
-.stat-label{font-size:10px;color:var(--arc-muted);letter-spacing:1px;text-transform:uppercase;margin-top:.25rem}
+    .stat-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:1.5rem}
+    .stat{background:var(--arc-surface);border:1px solid var(--arc-border);border-radius:8px;padding:1rem;text-align:center}
+    .stat-num{font-family:var(--font-head);font-size:28px;font-weight:800;color:var(--arc-accent);display:block}
+    .stat-label{font-size:10px;color:var(--arc-muted);letter-spacing:1px;text-transform:uppercase;margin-top:.25rem}
 
-.deploy-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
-.deploy-card{
-  background:var(--arc-surface);border:1px solid var(--arc-border);
-  border-radius:8px;padding:1rem;text-align:center;
-  transition:border-color .25s,transform .25s;cursor:pointer;
-}
-.deploy-card:hover{transform:translateY(-3px)}
-.deploy-card.fly:hover{border-color:var(--arc-purple)}
-.deploy-card.render:hover{border-color:var(--arc-teal)}
-.deploy-card.railway:hover{border-color:var(--arc-green)}
-.deploy-name{font-size:13px;font-weight:600;margin:.5rem 0 .25rem;font-family:var(--font-head)}
-.deploy-note{font-size:10px;color:var(--arc-muted)}
+    .deploy-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px}
+    .deploy-card{
+      background:var(--arc-surface);border:1px solid var(--arc-border);
+      border-radius:8px;padding:1rem;text-align:center;
+      transition:border-color .25s,transform .25s;cursor:pointer;
+    }
+    .deploy-card:hover{transform:translateY(-3px)}
+    .deploy-card.fly:hover{border-color:var(--arc-purple)}
+    .deploy-card.render:hover{border-color:var(--arc-teal)}
+    .deploy-card.railway:hover{border-color:var(--arc-green)}
+    .deploy-name{font-size:13px;font-weight:600;margin:.5rem 0 .25rem;font-family:var(--font-head)}
+    .deploy-note{font-size:10px;color:var(--arc-muted)}
 
-.scroll-reveal{opacity:0;transform:translateY(20px);transition:opacity .5s ease,transform .5s ease}
-.scroll-reveal.visible{opacity:1;transform:translateY(0)}
+    .scroll-reveal{opacity:0;transform:translateY(20px);transition:opacity .5s ease,transform .5s ease}
+    .scroll-reveal.visible{opacity:1;transform:translateY(0)}
 
-.footer{padding:2rem;text-align:center;color:var(--arc-muted);font-size:11px;line-height:1.8}
-.footer a{color:var(--arc-accent);text-decoration:none}
+    .footer{padding:2rem;text-align:center;color:var(--arc-muted);font-size:11px;line-height:1.8}
+    .footer a{color:var(--arc-accent);text-decoration:none}
 
-.live-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--arc-green);animation:pulse 1.5s ease-in-out infinite;vertical-align:middle;margin-right:6px}
-</style>
+    .live-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--arc-green);animation:pulse 1.5s ease-in-out infinite;vertical-align:middle;margin-right:6px}
 
-<h2 class="sr-only">ARC Backend — animated README overview</h2>
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+  </style>
+</head>
+<body>
+  <!-- Back to ARC button -->
+  <button class="back-btn" onclick="window.open('https://arc.lime.vercel.app', '_blank')" style="border:none;cursor:pointer">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <path d="M19 12H5M12 19l-7-7 7-7"/>
+  </svg>
+  Start using ARC
+</button>
 
-<div class="hero">
-  <div class="hero-grid"></div>
-  <div class="hero-glow"></div>
-  <div class="logo-ring"><span class="logo-text">ARC</span></div>
-  <h1>Multi‑provider<br><span>Chat API</span></h1>
-  <p>Stream AI completions, manage conversations, and own your data.<br>Node.js · Express · PostgreSQL · SSE · JWT</p>
-  <div class="badge-row">
-    <span class="badge blue">node ≥ 18</span>
-    <span class="badge teal">PostgreSQL</span>
-    <span class="badge purple">SSE streaming</span>
-    <span class="badge green">MIT license</span>
-    <span class="badge amber">zero-cost deploy</span>
-  </div>
-</div>
+  <h2 class="sr-only">ARC Backend — animated README overview</h2>
 
-<div class="section scroll-reveal">
-  <div class="section-label">// capabilities</div>
-  <div class="section-title">Key Features</div>
-  <div class="feature-grid">
-    <div class="feat"><div class="feat-icon">🔐</div><div class="feat-title">Two Auth Modes</div><div class="feat-desc">Local JWT (bcrypt) or Neon Auth (RS256, OAuth ready).</div></div>
-    <div class="feat"><div class="feat-icon">💬</div><div class="feat-title">Chat Management</div><div class="feat-desc">Full CRUD for chats with isolated per-user message history.</div></div>
-    <div class="feat"><div class="feat-icon">⚡</div><div class="feat-title">SSE Streaming</div><div class="feat-desc">Real-time token-by-token completions, no polling needed.</div></div>
-    <div class="feat"><div class="feat-icon">🤖</div><div class="feat-title">Provider Adapters</div><div class="feat-desc">One endpoint, multiple AI providers. Add new ones easily.</div></div>
-    <div class="feat"><div class="feat-icon">🛡️</div><div class="feat-title">API Key Proxy</div><div class="feat-desc">Keys live in memory only for request duration, never stored.</div></div>
-    <div class="feat"><div class="feat-icon">📊</div><div class="feat-title">Usage Limits</div><div class="feat-desc">Per-user daily rate limiting logged to rate_limit_log.</div></div>
-  </div>
-</div>
-
-<div class="section scroll-reveal">
-  <div class="section-label">// architecture</div>
-  <div class="section-title">System Overview</div>
-  <div class="arch-wrap">
-    <svg class="arch" viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-          <path d="M0,0 L0,6 L8,3 z" fill="#5b8cff" opacity=".7"/>
-        </marker>
-        <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
-          <path d="M0,0 L0,6 L8,3 z" fill="#2dd4bf" opacity=".7"/>
-        </marker>
-      </defs>
-      <rect x="20" y="80" width="90" height="40" rx="6" fill="rgba(91,140,255,.15)" stroke="rgba(91,140,255,.5)" stroke-width="1"/>
-      <text x="65" y="97" text-anchor="middle" fill="#a0aec0" font-size="9" font-family="JetBrains Mono,monospace">Frontend</text>
-      <text x="65" y="109" text-anchor="middle" fill="#5b8cff" font-size="8" font-family="JetBrains Mono,monospace">ARC UI</text>
-
-      <rect x="240" y="75" width="120" height="50" rx="6" fill="rgba(167,139,250,.15)" stroke="rgba(167,139,250,.5)" stroke-width="1"/>
-      <text x="300" y="97" text-anchor="middle" fill="#a0aec0" font-size="9" font-family="JetBrains Mono,monospace">ARC Backend</text>
-      <text x="300" y="112" text-anchor="middle" fill="#a78bfa" font-size="8" font-family="JetBrains Mono,monospace">Express · Node.js</text>
-
-      <rect x="480" y="30" width="100" height="38" rx="6" fill="rgba(45,212,191,.15)" stroke="rgba(45,212,191,.5)" stroke-width="1"/>
-      <text x="530" y="46" text-anchor="middle" fill="#a0aec0" font-size="9" font-family="JetBrains Mono,monospace">Neon DB</text>
-      <text x="530" y="60" text-anchor="middle" fill="#2dd4bf" font-size="8" font-family="JetBrains Mono,monospace">PostgreSQL</text>
-
-      <rect x="480" y="80" width="100" height="38" rx="6" fill="rgba(251,191,36,.15)" stroke="rgba(251,191,36,.5)" stroke-width="1"/>
-      <text x="530" y="96" text-anchor="middle" fill="#a0aec0" font-size="9" font-family="JetBrains Mono,monospace">AI Providers</text>
-      <text x="530" y="110" text-anchor="middle" fill="#fbbf24" font-size="8" font-family="JetBrains Mono,monospace">Anthropic / OpenAI</text>
-
-      <rect x="480" y="130" width="100" height="38" rx="6" fill="rgba(74,222,128,.15)" stroke="rgba(74,222,128,.5)" stroke-width="1"/>
-      <text x="530" y="146" text-anchor="middle" fill="#a0aec0" font-size="9" font-family="JetBrains Mono,monospace">Neon Auth</text>
-      <text x="530" y="160" text-anchor="middle" fill="#4ade80" font-size="8" font-family="JetBrains Mono,monospace">JWKS · RS256</text>
-
-      <line x1="110" y1="100" x2="238" y2="100" stroke="#5b8cff" stroke-width="1" stroke-dasharray="5,3" marker-end="url(#arr)" opacity=".7">
-        <animate attributeName="stroke-dashoffset" from="60" to="0" dur="2s" repeatCount="indefinite"/>
-      </line>
-      <text x="174" y="94" text-anchor="middle" fill="#5b8cff" font-size="8" font-family="JetBrains Mono,monospace">HTTPS+JWT</text>
-
-      <line x1="362" y1="90" x2="478" y2="50" stroke="#2dd4bf" stroke-width="1" stroke-dasharray="5,3" marker-end="url(#arr2)" opacity=".7">
-        <animate attributeName="stroke-dashoffset" from="60" to="0" dur="2.4s" repeatCount="indefinite"/>
-      </line>
-      <line x1="362" y1="100" x2="478" y2="100" stroke="#fbbf24" stroke-width="1" stroke-dasharray="5,3" marker-end="url(#arr2)" opacity=".7">
-        <animate attributeName="stroke-dashoffset" from="60" to="0" dur="1.8s" repeatCount="indefinite"/>
-      </line>
-      <line x1="362" y1="110" x2="478" y2="148" stroke="#4ade80" stroke-width="1" stroke-dasharray="5,3" marker-end="url(#arr2)" opacity=".7">
-        <animate attributeName="stroke-dashoffset" from="60" to="0" dur="2.2s" repeatCount="indefinite"/>
-      </line>
-
-      <circle cx="300" cy="100" r="3" fill="#a78bfa">
-        <animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/>
-      </circle>
-    </svg>
-  </div>
-</div>
-
-<div class="section scroll-reveal">
-  <div class="section-label">// live stream</div>
-  <div class="section-title">SSE Completion Demo</div>
-  <div class="sse-demo">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:1rem;font-size:11px;color:var(--arc-muted)">
-      <span class="live-dot"></span>
-      <span>POST /completion → streaming response</span>
-    </div>
-    <div class="sse-stream" id="sse-stream">
-      <div class="sse-event">event: chunk</div>
-      <div id="chunks"></div>
-      <div class="sse-event" id="sse-done" style="opacity:0">event: done · tokens: 24 · saved ✓</div>
+  <div class="hero">
+    <div class="hero-grid"></div>
+    <div class="hero-glow"></div>
+    <div class="logo-ring"><span class="logo-text">ARC</span></div>
+    <h1>Multi‑provider<br><span>Chat API</span></h1>
+    <p>Stream AI completions, manage conversations, and own your data.<br>Node.js · Express · PostgreSQL · SSE · JWT</p>
+    <div class="badge-row">
+      <span class="badge blue">node ≥ 18</span>
+      <span class="badge teal">PostgreSQL</span>
+      <span class="badge purple">SSE streaming</span>
+      <span class="badge green">MIT license</span>
+      <span class="badge amber">zero-cost deploy</span>
     </div>
   </div>
-</div>
 
-<div class="flow-section scroll-reveal">
-  <div class="section-label">// auth flow</div>
-  <div class="section-title">How It Works</div>
-  <div class="flow-steps">
-    <div class="flow-step"><div class="step-num">01</div><div class="step-body"><div class="step-title">Client sends credentials</div><div class="step-desc">POST /auth/login with username + password (bcrypt) or Bearer RS256 token from Neon Auth.</div></div></div>
-    <div class="flow-step"><div class="step-num">02</div><div class="step-body"><div class="step-title">JWT issued or validated</div><div class="step-desc">Local mode signs a HS256 token. Neon Auth mode validates against the JWKS endpoint, extracting user_id.</div></div></div>
-    <div class="flow-step"><div class="step-num">03</div><div class="step-body"><div class="step-title">Rate limit checked</div><div class="step-desc">Middleware verifies per-user daily quota against rate_limit_log before forwarding to AI provider.</div></div></div>
-    <div class="flow-step"><div class="step-num">04</div><div class="step-body"><div class="step-title">Completion streamed</div><div class="step-desc">Backend proxies the request with the user's API key (in-memory only) and pipes SSE chunks to the frontend.</div></div></div>
-    <div class="flow-step"><div class="step-num">05</div><div class="step-body"><div class="step-title">Message persisted</div><div class="step-desc">Full message pair saved to Neon PostgreSQL after stream ends. Context survives page reloads.</div></div></div>
-  </div>
-</div>
-
-<div class="section scroll-reveal">
-  <div class="section-label">// endpoints</div>
-  <div class="section-title">API Reference</div>
-  <div style="background:var(--arc-surface);border:1px solid var(--arc-border);border-radius:8px;overflow:hidden">
-    <table class="api-table">
-      <thead><tr><th>Method</th><th>Endpoint</th><th>Notes</th></tr></thead>
-      <tbody>
-        <tr><td><span class="method post">POST</span></td><td class="route">/auth/register</td><td style="color:var(--arc-muted);font-size:11px">{ username, password } → { token }</td></tr>
-        <tr><td><span class="method post">POST</span></td><td class="route">/auth/login</td><td style="color:var(--arc-muted);font-size:11px">{ username, password } → { token }</td></tr>
-        <tr><td><span class="method get">GET</span></td><td class="route">/auth/me</td><td style="color:var(--arc-muted);font-size:11px">Bearer → { user }</td></tr>
-        <tr><td><span class="method get">GET</span></td><td class="route">/chats</td><td style="color:var(--arc-muted);font-size:11px">List chats with message counts</td></tr>
-        <tr><td><span class="method post">POST</span></td><td class="route">/chats</td><td style="color:var(--arc-muted);font-size:11px">{ provider, model, title? }</td></tr>
-        <tr><td><span class="method get">GET</span></td><td class="route">/chats/:id</td><td style="color:var(--arc-muted);font-size:11px">Full chat + messages</td></tr>
-        <tr><td><span class="method patch">PATCH</span></td><td class="route">/chats/:id</td><td style="color:var(--arc-muted);font-size:11px">Rename: { title }</td></tr>
-        <tr><td><span class="method del">DELETE</span></td><td class="route">/chats/:id</td><td style="color:var(--arc-muted);font-size:11px">Cascades to messages</td></tr>
-        <tr><td><span class="method post">POST</span></td><td class="route">/completion</td><td style="color:var(--arc-muted);font-size:11px">SSE stream · { chatId, messages, apiKey }</td></tr>
-        <tr><td><span class="method get">GET</span></td><td class="route">/health</td><td style="color:var(--arc-muted);font-size:11px">{ ok: true } — public</td></tr>
-        <tr><td><span class="method get">GET</span></td><td class="route">/models</td><td style="color:var(--arc-muted);font-size:11px">Available model catalogue — public</td></tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-
-<div class="section scroll-reveal">
-  <div class="section-label">// quick start</div>
-  <div class="section-title">Local Dev Setup</div>
-  <div class="terminal">
-    <div class="terminal-bar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
-    <div><span class="t-comment"># 1 · clone & install</span></div>
-    <div><span class="t-prompt">$ </span><span class="t-cmd">git clone https://github.com/rozengoza/chat-interface-backend</span></div>
-    <div><span class="t-prompt">$ </span><span class="t-cmd">cd chat-interface-backend && npm install</span></div>
-    <br>
-    <div><span class="t-comment"># 2 · configure</span></div>
-    <div><span class="t-prompt">$ </span><span class="t-cmd">cp .env.example .env</span></div>
-    <div style="font-size:11px;color:#3d4a5e">  DATABASE_URL=postgresql://...</div>
-    <div style="font-size:11px;color:#3d4a5e">  JWT_SECRET=your-secret</div>
-    <br>
-    <div><span class="t-comment"># 3 · run schema in Neon SQL Editor, then:</span></div>
-    <div><span class="t-prompt">$ </span><span class="t-cmd">npm run dev</span></div>
-    <div><span class="t-out">  ✓ Server running on http://localhost:5000</span></div>
-    <div><span class="t-out">  ✓ /health → {"ok":true}</span></div>
-    <div><span class="t-out">  ✓ /models → [...] </span><span class="t-cursor"></span></div>
-  </div>
-</div>
-
-<div class="section scroll-reveal">
-  <div class="section-label">// deploy</div>
-  <div class="section-title">Zero-Cost Platforms</div>
-  <div class="deploy-grid">
-    <div class="deploy-card fly" onclick="openLink('https://fly.io')">
-      <div style="font-size:28px">🚀</div>
-      <div class="deploy-name" style="color:var(--arc-purple)">Fly.io</div>
-      <div class="deploy-note">fly.toml included · global edge</div>
-    </div>
-    <div class="deploy-card render" onclick="openLink('https://render.com')">
-      <div style="font-size:28px">⚡</div>
-      <div class="deploy-name" style="color:var(--arc-teal)">Render</div>
-      <div class="deploy-note">render.yaml included · auto-deploy</div>
-    </div>
-    <div class="deploy-card railway" onclick="openLink('https://railway.app')">
-      <div style="font-size:28px">🛤️</div>
-      <div class="deploy-name" style="color:var(--arc-green)">Railway</div>
-      <div class="deploy-note">railway.toml included · one-click</div>
+  <div class="section scroll-reveal">
+    <div class="section-label">// capabilities</div>
+    <div class="section-title">Key Features</div>
+    <div class="feature-grid">
+      <div class="feat"><div class="feat-icon">🔐</div><div class="feat-title">Two Auth Modes</div><div class="feat-desc">Local JWT (bcrypt) or Neon Auth (RS256, OAuth ready).</div></div>
+      <div class="feat"><div class="feat-icon">💬</div><div class="feat-title">Chat Management</div><div class="feat-desc">Full CRUD for chats with isolated per-user message history.</div></div>
+      <div class="feat"><div class="feat-icon">⚡</div><div class="feat-title">SSE Streaming</div><div class="feat-desc">Real-time token-by-token completions, no polling needed.</div></div>
+      <div class="feat"><div class="feat-icon">🤖</div><div class="feat-title">Provider Adapters</div><div class="feat-desc">One endpoint, multiple AI providers. Add new ones easily.</div></div>
+      <div class="feat"><div class="feat-icon">🛡️</div><div class="feat-title">API Key Proxy</div><div class="feat-desc">Keys live in memory only for request duration, never stored.</div></div>
+      <div class="feat"><div class="feat-icon">📊</div><div class="feat-title">Usage Limits</div><div class="feat-desc">Per-user daily rate limiting logged to rate_limit_log.</div></div>
     </div>
   </div>
-  <div class="stat-row">
-    <div class="stat"><span class="stat-num">0¢</span><div class="stat-label">hosting cost</div></div>
-    <div class="stat"><span class="stat-num">5</span><div class="stat-label">min to deploy</div></div>
-    <div class="stat"><span class="stat-num">3</span><div class="stat-label">deploy options</div></div>
-    <div class="stat"><span class="stat-num">∞</span><div class="stat-label">chat history</div></div>
+
+  <div class="section scroll-reveal">
+    <div class="section-label">// architecture</div>
+    <div class="section-title">System Overview</div>
+    <div class="arch-wrap">
+      <svg class="arch" viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#5b8cff" opacity=".7"/>
+          </marker>
+          <marker id="arr2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L0,6 L8,3 z" fill="#2dd4bf" opacity=".7"/>
+          </marker>
+        </defs>
+        <rect x="20" y="80" width="90" height="40" rx="6" fill="rgba(91,140,255,.15)" stroke="rgba(91,140,255,.5)" stroke-width="1"/>
+        <text x="65" y="97" text-anchor="middle" fill="#a0aec0" font-size="9" font-family="JetBrains Mono,monospace">Frontend</text>
+        <text x="65" y="109" text-anchor="middle" fill="#5b8cff" font-size="8" font-family="JetBrains Mono,monospace">ARC UI</text>
+
+        <rect x="240" y="75" width="120" height="50" rx="6" fill="rgba(167,139,250,.15)" stroke="rgba(167,139,250,.5)" stroke-width="1"/>
+        <text x="300" y="97" text-anchor="middle" fill="#a0aec0" font-size="9" font-family="JetBrains Mono,monospace">ARC Backend</text>
+        <text x="300" y="112" text-anchor="middle" fill="#a78bfa" font-size="8" font-family="JetBrains Mono,monospace">Express · Node.js</text>
+
+        <rect x="480" y="30" width="100" height="38" rx="6" fill="rgba(45,212,191,.15)" stroke="rgba(45,212,191,.5)" stroke-width="1"/>
+        <text x="530" y="46" text-anchor="middle" fill="#a0aec0" font-size="9" font-family="JetBrains Mono,monospace">Neon DB</text>
+        <text x="530" y="60" text-anchor="middle" fill="#2dd4bf" font-size="8" font-family="JetBrains Mono,monospace">PostgreSQL</text>
+
+        <rect x="480" y="80" width="100" height="38" rx="6" fill="rgba(251,191,36,.15)" stroke="rgba(251,191,36,.5)" stroke-width="1"/>
+        <text x="530" y="96" text-anchor="middle" fill="#a0aec0" font-size="9" font-family="JetBrains Mono,monospace">AI Providers</text>
+        <text x="530" y="110" text-anchor="middle" fill="#fbbf24" font-size="8" font-family="JetBrains Mono,monospace">Anthropic / OpenAI</text>
+
+        <rect x="480" y="130" width="100" height="38" rx="6" fill="rgba(74,222,128,.15)" stroke="rgba(74,222,128,.5)" stroke-width="1"/>
+        <text x="530" y="146" text-anchor="middle" fill="#a0aec0" font-size="9" font-family="JetBrains Mono,monospace">Neon Auth</text>
+        <text x="530" y="160" text-anchor="middle" fill="#4ade80" font-size="8" font-family="JetBrains Mono,monospace">JWKS · RS256</text>
+
+        <line x1="110" y1="100" x2="238" y2="100" stroke="#5b8cff" stroke-width="1" stroke-dasharray="5,3" marker-end="url(#arr)" opacity=".7">
+          <animate attributeName="stroke-dashoffset" from="60" to="0" dur="2s" repeatCount="indefinite"/>
+        </line>
+        <text x="174" y="94" text-anchor="middle" fill="#5b8cff" font-size="8" font-family="JetBrains Mono,monospace">HTTPS+JWT</text>
+
+        <line x1="362" y1="90" x2="478" y2="50" stroke="#2dd4bf" stroke-width="1" stroke-dasharray="5,3" marker-end="url(#arr2)" opacity=".7">
+          <animate attributeName="stroke-dashoffset" from="60" to="0" dur="2.4s" repeatCount="indefinite"/>
+        </line>
+        <line x1="362" y1="100" x2="478" y2="100" stroke="#fbbf24" stroke-width="1" stroke-dasharray="5,3" marker-end="url(#arr2)" opacity=".7">
+          <animate attributeName="stroke-dashoffset" from="60" to="0" dur="1.8s" repeatCount="indefinite"/>
+        </line>
+        <line x1="362" y1="110" x2="478" y2="148" stroke="#4ade80" stroke-width="1" stroke-dasharray="5,3" marker-end="url(#arr2)" opacity=".7">
+          <animate attributeName="stroke-dashoffset" from="60" to="0" dur="2.2s" repeatCount="indefinite"/>
+        </line>
+
+        <circle cx="300" cy="100" r="3" fill="#a78bfa">
+          <animate attributeName="opacity" values="1;0.3;1" dur="2s" repeatCount="indefinite"/>
+        </circle>
+      </svg>
+    </div>
   </div>
-</div>
 
-<div class="footer scroll-reveal">
-  <div>Built by <a href="https://github.com/rozengoza">rozengoza</a> · MIT License · Deployed on Railway</div>
-  <div style="margin-top:.5rem;color:#3d4a5e">ARC Backend · Stream · Persist · Own your data</div>
-</div>
+  <div class="section scroll-reveal">
+    <div class="section-label">// live stream</div>
+    <div class="section-title">SSE Completion Demo</div>
+    <div class="sse-demo">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:1rem;font-size:11px;color:var(--arc-muted)">
+        <span class="live-dot"></span>
+        <span>POST /completion → streaming response</span>
+      </div>
+      <div class="sse-stream" id="sse-stream">
+        <div class="sse-event">event: chunk</div>
+        <div id="chunks"></div>
+        <div class="sse-event" id="sse-done" style="opacity:0">event: done · tokens: 24 · saved ✓</div>
+      </div>
+    </div>
+  </div>
 
-<script>
-const chunks = ["The ", "quick ", "brown ", "fox ", "streams ", "token ", "by ", "token—\n", "real-time, ", "no ", "polling, ", "just ", "pure ", "SSE ", "magic ✓"];
-const el = document.getElementById('chunks');
-const done = document.getElementById('sse-done');
-let i = 0;
-function addChunk(){
-  if(i >= chunks.length){ done.style.opacity='1'; done.style.transition='opacity .5s'; return; }
-  const span = document.createElement('span');
-  span.className = 'sse-chunk';
-  span.style.color = '#4ade80';
-  span.textContent = 'data: {"text":"' + chunks[i] + '"}\n';
-  el.appendChild(span);
-  requestAnimationFrame(()=>{ span.classList.add('visible'); });
-  i++;
-  setTimeout(addChunk, 260 + Math.random()*180);
-}
-setTimeout(addChunk, 800);
+  <div class="flow-section scroll-reveal">
+    <div class="section-label">// auth flow</div>
+    <div class="section-title">How It Works</div>
+    <div class="flow-steps">
+      <div class="flow-step"><div class="step-num">01</div><div class="step-body"><div class="step-title">Client sends credentials</div><div class="step-desc">POST /auth/login with username + password (bcrypt) or Bearer RS256 token from Neon Auth.</div></div></div>
+      <div class="flow-step"><div class="step-num">02</div><div class="step-body"><div class="step-title">JWT issued or validated</div><div class="step-desc">Local mode signs a HS256 token. Neon Auth mode validates against the JWKS endpoint, extracting user_id.</div></div></div>
+      <div class="flow-step"><div class="step-num">03</div><div class="step-body"><div class="step-title">Rate limit checked</div><div class="step-desc">Middleware verifies per-user daily quota against rate_limit_log before forwarding to AI provider.</div></div></div>
+      <div class="flow-step"><div class="step-num">04</div><div class="step-body"><div class="step-title">Completion streamed</div><div class="step-desc">Backend proxies the request with the user's API key (in-memory only) and pipes SSE chunks to the frontend.</div></div></div>
+      <div class="flow-step"><div class="step-num">05</div><div class="step-body"><div class="step-title">Message persisted</div><div class="step-desc">Full message pair saved to Neon PostgreSQL after stream ends. Context survives page reloads.</div></div></div>
+    </div>
+  </div>
 
-const reveals = document.querySelectorAll('.scroll-reveal');
-const obs = new IntersectionObserver(entries=>{
-  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); } });
-},{threshold:.12});
-reveals.forEach(r=>obs.observe(r));
-</script>
+  <div class="section scroll-reveal">
+    <div class="section-label">// endpoints</div>
+    <div class="section-title">API Reference</div>
+    <div style="background:var(--arc-surface);border:1px solid var(--arc-border);border-radius:8px;overflow:hidden">
+      <table class="api-table">
+        <thead><tr><th>Method</th><th>Endpoint</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td><span class="method post">POST</span></td><td class="route">/auth/register</td><td style="color:var(--arc-muted);font-size:11px">{ username, password } → { token }</td></tr>
+          <tr><td><span class="method post">POST</span></td><td class="route">/auth/login</td><td style="color:var(--arc-muted);font-size:11px">{ username, password } → { token }</td></tr>
+          <tr><td><span class="method get">GET</span></td><td class="route">/auth/me</td><td style="color:var(--arc-muted);font-size:11px">Bearer → { user }</td></tr>
+          <tr><td><span class="method get">GET</span></td><td class="route">/chats</td><td style="color:var(--arc-muted);font-size:11px">List chats with message counts</td></tr>
+          <tr><td><span class="method post">POST</span></td><td class="route">/chats</td><td style="color:var(--arc-muted);font-size:11px">{ provider, model, title? }</td></tr>
+          <tr><td><span class="method get">GET</span></td><td class="route">/chats/:id</td><td style="color:var(--arc-muted);font-size:11px">Full chat + messages</td></tr>
+          <tr><td><span class="method patch">PATCH</span></td><td class="route">/chats/:id</td><td style="color:var(--arc-muted);font-size:11px">Rename: { title }</td></tr>
+          <tr><td><span class="method del">DELETE</span></td><td class="route">/chats/:id</td><td style="color:var(--arc-muted);font-size:11px">Cascades to messages</td></tr>
+          <tr><td><span class="method post">POST</span></td><td class="route">/completion</td><td style="color:var(--arc-muted);font-size:11px">SSE stream · { chatId, messages, apiKey }</td></tr>
+          <tr><td><span class="method get">GET</span></td><td class="route">/health</td><td style="color:var(--arc-muted);font-size:11px">{ ok: true } — public</td></tr>
+          <tr><td><span class="method get">GET</span></td><td class="route">/models</td><td style="color:var(--arc-muted);font-size:11px">Available model catalogue — public</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="section scroll-reveal">
+    <div class="section-label">// quick start</div>
+    <div class="section-title">Local Dev Setup</div>
+    <div class="terminal">
+      <div class="terminal-bar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
+      <div><span class="t-comment"># 1 · clone & install</span></div>
+      <div><span class="t-prompt">$ </span><span class="t-cmd">git clone https://github.com/rozengoza/chat-interface-backend</span></div>
+      <div><span class="t-prompt">$ </span><span class="t-cmd">cd chat-interface-backend && npm install</span></div>
+      <br>
+      <div><span class="t-comment"># 2 · configure</span></div>
+      <div><span class="t-prompt">$ </span><span class="t-cmd">cp .env.example .env</span></div>
+      <div style="font-size:11px;color:#3d4a5e">  DATABASE_URL=postgresql://...</div>
+      <div style="font-size:11px;color:#3d4a5e">  JWT_SECRET=your-secret</div>
+      <br>
+      <div><span class="t-comment"># 3 · run schema in Neon SQL Editor, then:</span></div>
+      <div><span class="t-prompt">$ </span><span class="t-cmd">npm run dev</span></div>
+      <div><span class="t-out">  ✓ Server running on http://localhost:5000</span></div>
+      <div><span class="t-out">  ✓ /health → {"ok":true}</span></div>
+      <div><span class="t-out">  ✓ /models → [...] </span><span class="t-cursor"></span></div>
+    </div>
+  </div>
+
+  <div class="section scroll-reveal">
+    <div class="section-label">// deploy</div>
+    <div class="section-title">Zero-Cost Platforms</div>
+    <div class="deploy-grid">
+      <div class="deploy-card fly" onclick="openLink('https://fly.io')">
+        <div style="font-size:28px">🚀</div>
+        <div class="deploy-name" style="color:var(--arc-purple)">Fly.io</div>
+        <div class="deploy-note">fly.toml included · global edge</div>
+      </div>
+      <div class="deploy-card render" onclick="openLink('https://render.com')">
+        <div style="font-size:28px">⚡</div>
+        <div class="deploy-name" style="color:var(--arc-teal)">Render</div>
+        <div class="deploy-note">render.yaml included · auto-deploy</div>
+      </div>
+      <div class="deploy-card railway" onclick="openLink('https://railway.app')">
+        <div style="font-size:28px">🛤️</div>
+        <div class="deploy-name" style="color:var(--arc-green)">Railway</div>
+        <div class="deploy-note">railway.toml included · one-click</div>
+      </div>
+    </div>
+    <div class="stat-row">
+      <div class="stat"><span class="stat-num">0¢</span><div class="stat-label">hosting cost</div></div>
+      <div class="stat"><span class="stat-num">5</span><div class="stat-label">min to deploy</div></div>
+      <div class="stat"><span class="stat-num">3</span><div class="stat-label">deploy options</div></div>
+      <div class="stat"><span class="stat-num">∞</span><div class="stat-label">chat history</div></div>
+    </div>
+  </div>
+
+  <div class="footer scroll-reveal">
+    <div>Built by <a href="https://github.com/rozengoza">rozengoza</a> · MIT License · Deployed on Railway</div>
+    <div style="margin-top:.5rem;color:#3d4a5e">ARC Backend · Stream · Persist · Own your data</div>
+  </div>
+
+  <script>
+    function openLink(url) {
+      window.open(url, '_blank');
+    }
+
+    const chunks = ["The ", "quick ", "brown ", "fox ", "streams ", "token ", "by ", "token—\n", "real-time, ", "no ", "polling, ", "just ", "pure ", "SSE ", "magic ✓"];
+    const el = document.getElementById('chunks');
+    const done = document.getElementById('sse-done');
+    let i = 0;
+    function addChunk(){
+      if(i >= chunks.length){ done.style.opacity='1'; done.style.transition='opacity .5s'; return; }
+      const span = document.createElement('span');
+      span.className = 'sse-chunk';
+      span.style.color = '#4ade80';
+      span.textContent = 'data: {"text":"' + chunks[i] + '"}\n';
+      el.appendChild(span);
+      requestAnimationFrame(()=>{ span.classList.add('visible'); });
+      i++;
+      setTimeout(addChunk, 260 + Math.random()*180);
+    }
+    setTimeout(addChunk, 800);
+
+    const reveals = document.querySelectorAll('.scroll-reveal');
+    const obs = new IntersectionObserver(entries=>{
+      entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); } });
+    },{threshold:.12});
+    reveals.forEach(r=>obs.observe(r));
+  </script>
+</body>
+</html>
