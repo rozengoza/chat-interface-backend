@@ -203,6 +203,9 @@ curl -s -X POST http://localhost:3001/auth/register \
 #   "token": "eyJhbGciOiJIUzI1NiIs..."
 # }
 ```
+</details>
+
+---
 
 ### Chat Management
 
@@ -269,7 +272,7 @@ Check the [open issues](https://github.com/rozengoza/chat-interface-backend/issu
 ---
 
 <p align="center">
-  <sub>Built with ❤️ by <a href="https://github.com/rozengoza">rozengoza</a> · Deployed on <a href="https://fly.io/">Fly.io</a> and <a href="https://railway.app/">Railway</a> for zero‑cost global latency.</sub>
+  <sub>By <a href="https://github.com/rozengoza">rozengoza</a> · Deployed on <a href="https://railway.app/">Railway</a> for zero‑cost global latency.</sub>
 </p>
 
 
