@@ -65,3 +65,157 @@ Every component is documented in this README — from local development to produ
 | 🧪 **Health & Models** | Public `/health` and `/models` endpoints for quick status checks. |
 
 ---
+
+## How It Works
+
+### 1 · Local Authentication Flow
+
+```mermaid
+sequenceDiagram
+  actor U as User
+  participant FE as Frontend
+  participant BE as ARC Backend
+  participant DB as Neon DB
+
+  U->>FE: Enter username & password
+  FE->>BE: POST /auth/register (or /auth/login)
+  BE->>DB: Insert/verify credentials (bcrypt)
+  DB-->>BE: User record
+  BE-->>FE: JWT token (HS256, signed with JWT_SECRET)
+  FE->>FE: Store JWT in memory
+```
+
+--- 
+
+### 2 . Neon Auth
+
+```mermaid
+sequenceDiagram
+  actor U as User
+  participant FE as Frontend
+  participant NA as Neon Auth Service
+  participant BE as ARC Backend
+
+  U->>FE: Sign in via Neon Auth widget
+  FE->>NA: Authenticate (email/OAuth)
+  NA-->>FE: RS256 access token
+  FE->>BE: Request with Bearer token
+  BE->>NA: Validate token (JWKS endpoint)
+  NA-->>BE: Public keys
+  BE->>BE: Verify signature, extract user_id
+  BE-->>FE: Protected resource (user's chats)
+```
+
+---
+
+### 3 . Streaming a Completion (SSE)
+
+```mermaid
+sequenceDiagram
+  actor U as User
+  participant FE as Frontend
+  participant BE as ARC Backend
+  participant AI as AI Provider (Anthropic)
+
+  U->>FE: Types message & sends
+  FE->>BE: POST /completion { chatId, messages, provider, model, apiKey }
+  BE->>BE: Validate JWT, check rate limits
+  BE->>DB: Retrieve chat history (if existing)
+  BE->>AI: Proxy request with apiKey, stream=true
+  AI-->>BE: Token chunks (streamed)
+  loop Each chunk
+    BE-->>FE: SSE event: chunk { text: "..." }
+  end
+  AI-->>BE: Stream ends
+  BE-->>FE: SSE event: done { messageId, tokens }
+  BE->>DB: Save complete message pair
+```
+
+---
+
+### 4 . Chat Lifecycle
+```mermaid
+stateDiagram-v2
+  [*] --> CreateChat: POST /chats
+  CreateChat --> Active: title set
+  Active --> AddMessage: POST /completion
+  AddMessage --> Active: messages added
+  Active --> Rename: PATCH /chats/:id
+  Rename --> Active
+  Active --> Delete: DELETE /chats/:id
+  Delete --> [*]
+```
+
+---
+
+# 1. Clone and install
+git clone https://github.com/rozengoza/chat-interface-backend.git
+cd chat-interface-backend
+npm install
+
+# 2. Create environment file
+cp .env.example .env
+# Fill in your Neon DATABASE_URL (pooled connection string)
+
+# Required
+DATABASE_URL=postgresql://user:pass@ep-xxxx.us-east-2.aws.neon.tech/neondb?sslmode=require
+
+# Local auth
+USE_NEON_AUTH=false            # set to true for Neon Auth
+JWT_SECRET=your-super-secret   # only needed if USE_NEON_AUTH=false
+
+# Optional
+ALLOWED_ORIGINS=http://localhost:5173,https://your-frontend.vercel.app
+PORT=5000
+
+# 3. Initialize the database
+# Open Neon SQL Editor and paste the contents of sql/schema.sql → Run
+
+# 4. Start the server
+npm run dev
+# → http://localhost:5000
+# → http://localhost:5000/health   {"ok":true}
+# → http://localhost:5000/models   list of available models
+
+---
+
+## API Reference
+
+> All protected endpoints require the header `Authorization: Bearer <token>`.
+
+### Authentication — Local JWT Mode
+
+| Method | Endpoint | Body | Response |
+| --- | --- | --- | --- |
+| `POST` | `/auth/register` | `{ username, password }` | `{ token }` |
+| `POST` | `/auth/login` | `{ username, password }` | `{ token }` |
+| `GET` | `/auth/me` | — *(header only)* | `{ user }` |
+
+<details>
+<summary><strong>Example — register a new user</strong></summary>
+
+```bash
+curl -s -X POST http://localhost:3001/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"username":"alice","password":"s3cret"}' | jq
+
+# {
+#   "token": "eyJhbGciOiJIUzI1NiIs..."
+# }
+```
+
+### Chat Management
+
+| Method | Endpoint | Auth | Body / Notes | Response |
+| --- | --- | --- | --- | --- |
+| `GET` | `/chats` | JWT | Returns list with message counts | `[{ id, title, ... }]` |
+| `POST` | `/chats` | JWT | `{ provider, model, title? }` | `{ id, title, ... }` |
+| `GET` | `/chats/:id` | JWT | Full chat + messages | `{ id, messages: [...] }` |
+| `PATCH` | `/chats/:id` | JWT | `{ title }` | `{ id, title }` |
+| `DELETE` | `/chats/:id` | JWT | Cascades to messages | `{ success: true }` |
+
+
+---
+
+
+
