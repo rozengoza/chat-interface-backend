@@ -1,5 +1,5 @@
 <h1 align="center">
-  <img src="https://github.com/rozengoza/chat-interface-backend/public/assets/arc-logo.svg" alt="ARC Logo" width="80" /><br/>
+  <img src="https://github.com/rozengoza/chat-interface-backend/tree/development/public/assets/arc-logo.svg" alt="ARC Logo" width="80" /><br/>
   ARC Backend
 </h1>
 
