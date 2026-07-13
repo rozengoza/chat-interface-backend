@@ -49,6 +49,11 @@ app.use('/chats',      chatsRouter);
 app.use('/completion', completionRouter);
 app.use('/models',     modelsRouter);
 
+// --- Ping (lightweight, no DB — for frontend keepalive to prevent Render spin-down) ---
+app.get('/ping', (_req, res) => {
+  res.json({ ok: true, ts: new Date().toISOString() });
+});
+
 // --- Health check (used by Render / Railway for uptime monitoring) ---
 app.get('/health', async (_req, res) => {
   try {
