@@ -1,31 +1,27 @@
-# =============================================================
-# Fly.io deployment config
-# Free tier: 3 shared VMs, never sleeps, 3GB storage
-# Deploy: fly launch (first time) or fly deploy
-# Docs: https://fly.io/docs/reference/configuration/
-# =============================================================
+# fly.toml app configuration file generated for chat-interface-backend on 2026-07-13T05:05:37Z
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
 
-app = "arc-backend"
-primary_region = "sin"   # Singapore — closest to Nepal; change to your preference
-                         # Other options: bom (Mumbai), nrt (Tokyo), fra (Frankfurt)
+app = 'chat-interface-backend'
+primary_region = 'sin'
 
 [build]
-  dockerfile = "Dockerfile"
+  dockerfile = 'Dockerfile'
+
+[env]
+  NODE_ENV = 'production'
+  PORT = '3001'
 
 [http_service]
-  internal_port = 3001
+  internal_port = 8080
   force_https = true
-  auto_stop_machines = true    # stops when idle to save free allowance
-  auto_start_machines = true   # restarts on incoming request
+  auto_stop_machines = 'stop'
+  auto_start_machines = true
   min_machines_running = 0
 
 [[vm]]
-  memory = "256mb"
-  cpu_kind = "shared"
+  memory = '256mb'
+  cpu_kind = 'shared'
   cpus = 1
-
-[env]
-  NODE_ENV = "production"
-  PORT = "3001"
-  # Set secrets via: fly secrets set DATABASE_URL="..." JWT_SECRET="..."
-  # Never put real values here — this file is committed to git
+  memory_mb = 256
