@@ -181,7 +181,8 @@ INSERT INTO models (provider_slug, model_id, display_name, context_k, is_free, s
   ('ollama',      'mistral',                                  'Mistral 7B (local)',            32,   FALSE, 30),
   
   -- Gemini Free Tier (backend key)
-  ('gemini-free', 'gemini-2.0-flash',                         'Gemini 2.0 Flash ✦',            1000, TRUE,  10);
+  ('gemini-free', 'gemini-2.0-flash',                         'Gemini 2.0 Flash ✦',            1000, TRUE,  10),
+  ('gemini-free', 'gemini-2.5-flash',                         'Gemini 2.5 Flash ✦',            1000, TRUE,  20);
 
 -- ✦ = Backend-managed API key, rate-limited per user
 
