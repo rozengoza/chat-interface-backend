@@ -39,6 +39,8 @@ services:
       # --- CORS (update if your frontend URL changes) ---
       - key: ALLOWED_ORIGINS
         value: https://arc-lime.vercel.app
+        value: https://arc.baakhanfalcha.com
+        value: http://localhost:3000
 
       # --- Neon Auth (optional) ---
       - key: USE_NEON_AUTH
